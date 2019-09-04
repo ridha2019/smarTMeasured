@@ -1,0 +1,504 @@
+﻿<style>
+#device_stat_data table {
+	width: 100%;
+	margin-bottom: 3px;
+}
+#device_stat_data table tr {
+  height: 45px;
+  text-align: center;
+}
+#device_stat_data table thead {
+  color: white;
+  background: #0097A7;
+  padding: 3px;
+  border-bottom: 2px solid #80DEEA;
+}
+#device_stat_data table thead tr {
+	border-bottom: 1px solid white;
+}
+#device_stat_data table tbody tr {
+  border-bottom: 1px solid #00838F;
+}
+#device_stat_data table tbody tr:hover {
+  background: #c2f0f0;
+  cursor: pointer;
+}
+#chart-product_select {
+	margin: 25px 0px;
+	text-align: center;
+	padding: 5px;
+}
+#chart-product_select input {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	padding-left: 8px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#chart-product_select select {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	padding-left: 8px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#chart-product_select #update-chart {
+	margin: 0px 5px;
+	color: #01579B;
+	padding: 3px;
+	text-align: center;
+	border: 1px solid #9ad0f5;
+	width: 150px;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #9ad0f5;
+
+}
+#chart-product_select #update-chart:hover {
+	background: #9ad0f5;
+	cursor: pointer;
+	color: white;
+	font-style: bold;
+	border: 1px solid white;
+}
+#charts {
+	margin: 15px 0px;
+	margin-bottom:100px !important;
+	background: #fff;
+}
+#charts .chart {
+	width: 100% !important;
+	margin: 15px 0px;
+}
+#charts .chart-title {
+	display: block;
+	margin: 5px 0px;
+	text-align: center;
+	font-size: 130%;
+	font-family: 'Times new romain', 'serif';
+}
+</style>
+
+<div id="container">
+	<div id="chart-product_select" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<select class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" name="select" id="chart-selected-product">
+			<option value="null">No Product Selected</option>
+		</select>&nbsp;&nbsp;&nbsp;&nbsp;	
+		<label>From : </label><input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="chart-date-deb">
+		<label>To : </label><input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="chart-date-fin">
+		<input type="button" name="submit" id="update-chart" value="Display">
+	</div>
+	
+	<div id="charts" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<div id="stat-title" class="chart-title">Statistics Area</div>
+		<div class="chart" >
+			<canvas style="height:60vh; width:75vw !important;" id="temp-Cycle"></canvas>
+		</div>
+		<div class="chart" >
+			<canvas style="height:60vh; width:75vw !important;" id="temp-Test"></canvas>
+		</div>
+		<div class="chart" >
+			<canvas style="height:60vh; width:75vw !important;" id="result-test"></canvas>
+		</div>
+		<hr>
+		<div class="chart" >
+			<canvas id="pres_ant_4v-chart"></canvas>
+		</div>
+		<!--<div class="chart" >
+			<canvas id="pres_mod_4v-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<canvas id="pres_rub_4v-chart"></canvas>
+		</div>
+		<div class="chart" >
+			<canvas id="pres_ver_4v-chart"></canvas>
+		</div>-->
+		<div class="chart" >
+			<canvas id="test_mesu_imped_reel-chart"></canvas>
+		</div>
+		<!--<div class="chart" >
+			<canvas id="test_mesu_imped_imag-chart"></canvas>
+		</div>-->
+		
+	</div>
+	
+	<div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+</div>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>-->
+<script>
+function addData_OkNotOk(data) {
+    var valeurs=[];
+	$.each(data, function (i, item) {
+		valeurs.push(item['y']);	
+	});
+	return valeurs;
+}
+function addDatalabel(data) {
+    var labels=[];
+	$.each(data, function (i, item) {
+		labels.push(item['x']);	
+	});
+	return labels;
+}
+function bgcolors(data,bg) {
+    var colors=[];
+	$.each(data, function (i, item) {
+		colors.push(bg);	
+	});
+	return colors;
+}
+function bordcolors(data,bc) {
+    var bordc=[];
+	$.each(data, function (i, item) {
+		bordc.push(bc);	
+	});
+	return bordc;
+}
+/************************************************************************/
+	if ('undefined' == typeof window.jQuery) {
+		console.log('// jQuery not present');
+	}
+$(document ).ready(function() {
+	$("#container > .sk-circle").css({"visibility": "visible"});
+	$("#chart-product_select input[type=date]").first().val('2018-09-29');
+	$("#chart-product_select input[type=date]").last().val('2018-09-29');
+	data = [];
+	/*-------------------- Get Products -------------------------------*/
+	$.post('/getUserProducts/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $.each(data, function (i, item) {
+		    $('#chart-selected-product').append($('<option>', { 
+		        value: item,
+		        text : item 
+		    }));
+		});
+      }
+      else {
+		$("#container .sk-circle").css({"visibility": "hidden"});
+		$('.alert-danger').text('Aucun Produit trouvé').show();
+		setTimeout(function() {
+			$('.alert-danger').hide();
+		}, 1500);
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });	
+	
+	var chart_temp, chart_gp;
+	var _temps = [], _pres = [], _test_mesure = [];
+	var data = {};
+$("#chart-product_select #update-chart").click(function(event) {
+	$("#container .sk-circle").css({"visibility": "visible"});
+	var datedeb=$("#chart-product_select input[type=date]").first().val();
+	var datefin=$("#chart-product_select input[type=date]").last().val();
+	var data_from =$('#chart-selected-product').val();
+	if (data_from !== "null") $('#stat-title').text('Produit : '+data_from);
+	if(data_from == "null"){
+		$('.alert-warning').text('Please select a valid Product').show();
+		  setTimeout(function() {
+			$('.alert-warning').hide();
+		  }, 1500);
+		  $("#container .sk-circle").css({"visibility": "hidden"});
+		  return ;
+	}		
+	if($("#chart-date-deb").val() == "" || $("#chart-date-fin").val() == ""){
+		$('.alert-warning').text('Please provide a valid time interval').show();
+		  setTimeout(function() {
+			$('.alert-warning').hide();
+		  }, 1500);
+		  $("#container .sk-circle").css({"visibility": "hidden"});
+		  return ;
+	}
+	var temp1 = $("#chart-date-deb").val().split('-');
+	var temp2 = $("#chart-date-fin").val().split('-');
+	var datedeb = parseInt(temp1[2]).toString()+"/"+parseInt(temp1[1]).toString()+"/"+temp1[0].toString();
+	var datefin = parseInt(temp2[2]).toString()+"/"+parseInt(temp2[1]).toString()+"/"+temp2[0].toString();		
+	var data = {
+		'data_from': data_from,
+		'datedeb': datedeb,
+		'datefin': datefin			
+	}
+	$.post('/getDataMeasure/', data, function(data) {
+	$("#container .sk-circle").css({"visibility": "hidden"});
+	if(data.length > 0) {
+	
+	_temps['Cycle'] = [];
+	_temps['Test'] = [];
+	_temps['Result'] = [];
+	_pres['Ant4v'] = [];
+	_test_mesure['Imp_reel'] = [];
+	
+	$.each(data, function (i, item) {
+		var dt1=item.Date;
+		var tm1=item.Hr_test;
+		var temp1 = dt1.split('/');
+		var date_all = parseInt(temp1[2]).toString()+"/"+parseInt(temp1[1]).toString()+"/"+temp1[0].toString()+' '+tm1;
+		var booleanres=0,boolepresAnt=0;
+		if (item.Result_test=='Bon') booleanres=1;if (item.Pres_ant4v=='OK') boolepresAnt=1;
+		_temps['Cycle'].push({x:date_all.toString(),y:parseFloat(item.Tmp_cycl)});
+		_temps['Test'].push({x:date_all.toString(),y:parseFloat(item.Tmp_test)});
+		_temps['Result'].push({x:date_all.toString(),y:booleanres});
+		_pres['Ant4v'].push({x:date_all.toString(),y:boolepresAnt});
+		_test_mesure['Imp_reel'].push({x:date_all.toString(),y:parseFloat(item.TestMes_ImpReel)});
+	});
+
+	/***************************Stat1*********************************/
+	var max_values =_temps['Cycle'].length;
+	var ctx = $("#temp-Cycle");
+	var myLineChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: addDatalabel( _temps['Cycle']),
+			datasets:
+			[
+				{
+					label: 'Temps Cycle',
+					borderColor: '#27ae60',
+					data:_temps['Cycle'],
+					fill: false,
+				},
+			]
+		},
+		options: {
+			responsive: true,
+			title: {
+				display: true,
+				text: 'Temps Cycle'
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					ticks: {
+						beginAtZero:false,
+						maxRotation: 45,
+						minRotation: 45
+					}
+				}],
+				yAxes: [{
+					display: true,
+					type: 'logarithmic',
+				}]
+			}
+		}
+	});
+				
+	/***************************Stat2*********************************/
+	var ctx = $("#temp-Test");
+	var myLineChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: addDatalabel( _temps['Test']),
+			datasets:
+			[
+				{
+					label: 'Temps Test',
+					borderColor: '#FF00FF',
+					data:_temps['Test'],
+					fill: false,
+				}
+			]
+		},
+		options: {
+			responsive: true,
+			title: {
+				display: true,
+				text: 'Temps TEST'
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					ticks: {
+						beginAtZero:false,
+						maxRotation: 45,
+						minRotation: 45
+					}
+				}],
+				yAxes: [{
+					display: true,
+					ticks: {
+						beginAtZero:false
+					}
+				}]
+			}
+		}
+	});
+	/***************************Stat3*********************************/
+	var bc="rgb(255, 99, 132)";
+	var bg="rgba(255, 99, 132, 0.2)"; 
+	var max_values =_temps['Result'].length;
+	new Chart(document.getElementById("result-test"),{
+	"type":"bar",
+	"data":{
+	"labels":addDatalabel( _temps['Result']),
+	"datasets":[
+		{
+			"label":"Result Test 1:Bon - 0:Mauvais",
+			"data":addData_OkNotOk(_temps['Result']),
+			"fill":false,
+			"backgroundColor":bgcolors(_temps['Result'],bg),
+			"borderColor":bordcolors(_temps['Result'],bc),
+			"borderWidth":1
+		}
+		]
+	},
+	"options":{
+		"scales":{
+			"yAxes":[{
+				"ticks":{
+					"beginAtZero":true,
+					max: 1.2,
+					min: 0,
+					stepSize: 1
+				},
+				gridLines:{
+					display:false
+				},
+				display: true,
+				scaleLabel: {
+					display: true,
+					labelString: 'Values',
+					beginAtZero:true
+				}
+			}],
+			xAxes:[{
+				ticks: {
+                    autoSkip: false,
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+			}]
+		}
+		}
+	}); 
+	/***************************Stat4*********************************/
+	var bc="rgb(255, 159, 64)";
+	var bg="rgba(255, 159, 64, 0.2)"; 
+	var max_values =_temps['Result'].length;
+	new Chart(document.getElementById("pres_ant_4v-chart"),{
+	"type":"bar",
+	"data":{
+	"labels":addDatalabel(_pres['Ant4v']),
+	"datasets":[
+		{
+			"label":"Présence Antenne 4V 1:Ok - 0:NotOk",
+			"data":addData_OkNotOk(_pres['Ant4v']),
+			"fill":false,
+			"backgroundColor":bgcolors(_pres['Ant4v'],bg),
+			"borderColor":bordcolors(_pres['Ant4v'],bc),
+			"borderWidth":1
+		}
+		]
+	},
+	"options":{
+		"scales":{
+			"yAxes":[{
+				"ticks":{
+					"beginAtZero":true,
+					max: 1.2,
+					min: 0,
+					stepSize: 1
+				},
+				gridLines:{
+					display:false
+				},
+				display: true,
+				scaleLabel: {
+					display: true,
+					labelString: 'Values',
+					beginAtZero:true
+				}
+			}],
+			xAxes:[{
+				ticks: {
+                    autoSkip: false,
+                    maxRotation: 45,
+                    minRotation: 45
+                }
+			}]
+		}
+		}
+	});
+	/***************************Stat1*********************************/
+	var max_values =_test_mesure['Imp_reel'].length;
+	var ctx = $("#test_mesu_imped_reel-chart");
+	var myLineChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: addDatalabel(_test_mesure['Imp_reel']),
+			datasets:
+			[
+				{
+					label: 'Test Mesure Impédance Réelle',
+					borderColor: '#00CCFF',
+					data:_test_mesure['Imp_reel'],
+					fill: false,
+				},
+			]
+		},
+		options: {
+			responsive: true,
+			title: {
+				display: true,
+				text: 'Test Mesure Impédance Réelle'
+			},
+			scales: {
+				xAxes: [{
+					display: true,
+					ticks: {
+						beginAtZero:false,
+						maxRotation: 45,
+						minRotation: 45
+					}
+				}],
+				yAxes: [{
+					display: true/*,
+					type: 'logarithmic',*/
+				}]
+			}
+		}
+	});
+	/***************************StatX*********************************/
+	}
+	else {
+
+	}
+	}).fail(function(error) {
+		console.log(error);
+	  $("#container .sk-circle").css({"visibility": "hidden"});
+	  $('.alert-danger').text('Could not get data').show();
+	  setTimeout(function() {
+		$('.alert-danger').hide();
+	  }, 1500);
+	});
+		
+});	
+
+});	
+</script>

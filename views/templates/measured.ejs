@@ -1,0 +1,270 @@
+﻿<div id="main">
+<style>
+#mesure_data table {
+	width: 100%;
+	margin-bottom: 3px;
+}
+#mesure_data table tr {
+  height: 45px;
+  text-align: center;
+}
+#mesure_data table thead {
+  color: white;
+  background: #0097A7;
+  padding: 3px;
+  border-bottom: 2px solid #80DEEA;
+}
+#mesure_data table thead tr {
+	border-bottom: 1px solid white;
+}
+#mesure_data table tbody tr {
+  border-bottom: 1px solid #00838F;
+}
+#mesure_data table tbody tr:hover {
+  background: #c2f0f0;
+  cursor: pointer;
+}
+
+#produit_select {
+	margin: 15px 0px;
+	text-align: center;
+	padding: 5px;
+}
+#produit_select input {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	color: gray;			
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+#produit_select input#update-chart{background: #FF6600 !important;color:#fff;}
+#produit_select input#update-chart:hover{cursor:pointer;}
+#produit_select input[type="date"]{width:200px;}
+#produit_select select {
+	margin: 5px 0px;
+	border: none;
+	border-bottom: 1px solid #80CBC4;
+	height: 45px;
+	padding: 3px;
+	color: gray;
+	border-radius: 8px;
+	box-shadow: 3px 5px 3px #80CBC4;
+}
+.sk-circle .sk-child {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.sk-circle .sk-child:before {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 15%;
+  height: 15%;
+  background-color: #007399;
+  border-radius: 100%;
+  -webkit-animation: sk-circleBounceDelay 1.2s infinite ease-in-out both;
+          animation: sk-circleBounceDelay 1.2s infinite ease-in-out both;
+}
+@media screen and (max-width: 575.98px) {
+	.voltage-current, .temperature {
+		display: none;
+	}
+}
+
+@media screen and (min-width: 576px) and (max-width: 767.98px) {
+	.voltage-current, .temperature {
+		display: none;
+	}
+}
+
+@media screen and (min-width: 768px) and (max-width: 991.98px) {
+	.voltage-current {
+		display: none;
+	}
+	.temperature {
+		display: ;
+	}
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199.98px) {
+	.voltage-current, .temperature {
+		display: ;
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	.voltage-current, .temperature {
+		display: ;
+	}
+}
+</style>
+
+<div id="container">
+	<div id="produit_select" class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+		<select class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" name="select" id="selected-product">
+			<option value="null">No Product Selected</option>
+		</select>&nbsp;&nbsp;&nbsp;&nbsp;	
+		<label>From : </label><input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="data-date-deb">
+		<label>To : </label><input class="col-12 col-sm-12 col-md-5 col-lg-4 col-xl-3" type="date" id="data-date-fin">
+		<input type="button" name="submit" id="update-chart" value="Display">
+	</div>
+	<div id="mesure_data">
+		<table>
+			<thead>
+				<tr>
+					<th class="voltage-current">Date</th>
+					<th class="voltage-current">Hr Test</th>
+					<th class="voltage-current">Opérateur</th>
+					<th class="voltage-current">Rés. Test</th>
+					<th class="voltage-current">Tps Cycle</th>
+					<th class="voltage-current">Tps Test</th>
+					<th class="voltage-current">Prés. Ant4V</th>
+					<th class="voltage-current">Prés. Mod4V</th>
+					<th class="voltage-current">Prés. Rub4V</th>
+					<th class="voltage-current">Prés. Ver4V</th>
+					<th class="voltage-current">Test. MesImpRéel</th>
+					<th class="voltage-current">Test. MesImpImag</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+
+	<div class="sk-circle">
+      <div class="sk-circle1 sk-child"></div>
+      <div class="sk-circle2 sk-child"></div>
+      <div class="sk-circle3 sk-child"></div>
+      <div class="sk-circle4 sk-child"></div>
+      <div class="sk-circle5 sk-child"></div>
+      <div class="sk-circle6 sk-child"></div>
+      <div class="sk-circle7 sk-child"></div>
+      <div class="sk-circle8 sk-child"></div>
+      <div class="sk-circle9 sk-child"></div>
+      <div class="sk-circle10 sk-child"></div>
+      <div class="sk-circle11 sk-child"></div>
+      <div class="sk-circle12 sk-child"></div>
+    </div>
+</div>
+
+</div><!--Main-->
+</section>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script>
+/************************************************************************/
+	if ('undefined' == typeof window.jQuery) {
+		console.log('// jQuery not present');
+	}
+$(document ).ready(function() {
+	$("#container > .sk-circle").css({"visibility": "visible"});
+	data = [];
+	/*-------------------- Get Products -------------------------------*/
+	$.post('/getUserProducts/', data, function(data) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      if(data.length > 0) {
+        $.each(data, function (i, item) {
+		    $('#selected-product').append($('<option>', { 
+		        value: item,
+		        text : item 
+		    }));
+		});
+      }
+      else {
+		$("#container .sk-circle").css({"visibility": "hidden"});
+		$('.alert-danger').text('Aucun Produit trouvé').show();
+		setTimeout(function() {
+			$('.alert-danger').hide();
+		}, 1500);
+      }
+
+    }).fail(function(error) {
+      $("#container .sk-circle").css({"visibility": "hidden"});
+      $('.alert-danger').text('Could not get data').show();
+      setTimeout(function() {
+        $('.alert-danger').hide();
+      }, 1500);
+    });
+	//Max date to Today
+	$("#produit_select input[type=date]").attr({'max': new Date().toJSON().split('T')[0]});
+	/*-------------------- Go Display Results -------------------------------*/
+	$("#produit_select #update-chart").click(function(event) {
+		var datedeb=$("#produit_select input[type=date]").first().val();
+		var datefin=$("#produit_select input[type=date]").last().val();
+		var Famil_prod =$('#selected-product').val();
+		
+		$("#container .sk-circle").css({"visibility": "visible"});
+		$("#device_stat_data table tbody").html("");
+		if(Famil_prod == "null"){
+			$('.alert-warning').text('Please select a valid Product').show();
+		      setTimeout(function() {
+		        $('.alert-warning').hide();
+		      }, 1500);
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      return ;
+		}		
+		if(datedeb == "null" || datefin == ""){
+			$('.alert-warning').text('Please provide a valid time interval').show();
+		      setTimeout(function() {
+		        $('.alert-warning').hide();
+		      }, 1500);
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      return ;
+		}
+		var temp1 = $("#data-date-deb").val().split('-');
+		var temp2 = $("#data-date-fin").val().split('-');
+		var datedeb = parseInt(temp1[2]).toString()+"/"+parseInt(temp1[1]).toString()+"/"+temp1[0].toString();
+		var datefin = parseInt(temp2[2]).toString()+"/"+parseInt(temp2[1]).toString()+"/"+temp2[0].toString()
+		var data = {
+			'Famil_prod': Famil_prod,
+			'datedeb': datedeb,
+			'datefin': datefin
+		}
+	   		$.post('/getmesureData/', data, function(data) {
+	   		  $('#mesure_data table tbody').html('');
+		      $("#container .sk-circle").css({"visibility": "hidden"});
+		      if(data.length > 0) {
+		      	data.sort((function (a, b) { return new Date(a.timestamp) - new Date(b.timestamp) }));
+		        $.each(data, function (i, item) {
+				    $('#mesure_data table tbody').append(
+				    	'<tr class="dev-data">\
+							<td class="voltage-current">'+item.Date+'</td>\
+							<td class="voltage-current">'+item.Hr_test+'</td>\
+							<td class="voltage-current">'+item.Matr_oper+'</td>\
+							<td class="voltage-current">'+item.Result_test+'</td>\
+							<td class="voltage-current">'+item.Tmp_cycl+'</td>\
+							<td class="voltage-current">'+item.Tmp_test+'</td>\
+							<td class="voltage-current">'+item.Pres_ant4v+'</td>\
+							<td class="voltage-current">'+item.Pres_mod4v+'</td>\
+							<td class="voltage-current">'+item.Pres_rub4v+'</td>\
+							<td class="voltage-current">'+item.Pres_ver4v+'</td>\
+							<td class="voltage-current">'+item.TestMes_ImpReel+'</td>\
+							<td class="voltage-current">'+item.TestMes_ImpImag+'</td>\
+						</tr>');
+				});
+		      }
+		      else {
+				$("#container .sk-circle").css({"visibility": "hidden"});
+				$('.alert-danger').text('Could not get data').show();
+				setTimeout(function() {
+					$('.alert-danger').hide();
+				}, 1500);		        
+		      }
+
+		    }).fail(function(error) {
+				$("#container .sk-circle").css({"visibility": "hidden"});
+				$('.alert-danger').text('Could not get data').show();
+				setTimeout(function() {
+					$('.alert-danger').hide();
+				}, 1500);
+		    });
+	   });
+	   $("#container > .sk-circle").css({"visibility": "hidden"});
+});
+</script>
